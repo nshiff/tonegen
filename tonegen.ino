@@ -81,10 +81,65 @@ static int waveformsTable[maxWaveform][maxSamplesNum] = {
  
  
 //-------------------------------------------------------------
- 
- 
+/*************************************************
+ * Public Constants
+ *************************************************/
+
+#define NOTE_B0  31
+#define NOTE_C1  33
+#define NOTE_CS1 35
+#define NOTE_D1  37
+#define NOTE_DS1 39
+#define NOTE_E1  41
+#define NOTE_F1  44
+#define NOTE_FS1 46
+#define NOTE_G1  49
+#define NOTE_GS1 52
+#define NOTE_A1  55
+#define NOTE_AS1 58
+#define NOTE_B1  62
+#define NOTE_C2  65
+#define NOTE_CS2 69
+#define NOTE_D2  73
+#define NOTE_DS2 78
+#define NOTE_E2  82
+#define NOTE_F2  87
+#define NOTE_FS2 93
+#define NOTE_G2  98
+#define NOTE_GS2 104
+#define NOTE_A2  110
+#define NOTE_AS2 117
+#define NOTE_B2  123
+#define NOTE_C3  131
+#define NOTE_CS3 139
+#define NOTE_D3  147
+#define NOTE_DS3 156
+#define NOTE_E3  165
+#define NOTE_F3  175
+#define NOTE_FS3 185
+#define NOTE_G3  196
+#define NOTE_GS3 208
+#define NOTE_A3  220
+#define NOTE_AS3 233
+#define NOTE_B3  247
+#define NOTE_C4  262
+#define NOTE_CS4 277
+#define NOTE_D4  294
+#define NOTE_DS4 311
+#define NOTE_E4  330
+#define NOTE_F4  349
+#define NOTE_FS4 370
+#define NOTE_G4  392
+#define NOTE_GS4 415
+#define NOTE_A4  440
+#define NOTE_AS4 466
+#define NOTE_B4  494
+#define NOTE_C5  513
+
+//-------------------------------------------------------------
 
 int pinAudioOut = 3;
+int SECOND = 1000000; 	//in microseconds
 int SINE		= 0;	//address in waveform table
 int TRIANGLE 	= 1;
 int SAWTOOTH 	= 2;
@@ -93,31 +148,38 @@ int SQUARE 		= 3;
 void setup() {	/* === SETUP ===*/
 	pinMode(pinAudioOut, OUTPUT);
 
+	int melody[] = {NOTE_C4, NOTE_G3, NOTE_C2, NOTE_G3, NOTE_C4, NOTE_G4, NOTE_C5};
+
+	for(int note; note<8; note++){	//8 notes in the melody
+		playNCyclesPerSecond(melody[note]);
+	}
+	
 }
 
-int SECOND = 1000000; //in microseconds
 
 void loop() {	/* === LOOP === */
-
-	playNCyclesPerSecond(440);
-	
+	//save our sanity and play the melody only once
+		
 }
 
 void playNCyclesPerSecond(int N){
 	for(int i=0; i<N; i++){
-		playOneWavelength(SQUARE, 200000/N);
-		usleep(SECOND/N);
+		playOneWavelength(SQUARE, N);
 	}
 }
 
 void playOneWavelength(int which, int frequency){
+	
 	for(int sample=0; sample<120; sample++){ //array is 120 elements long
-		for(int freqStretch=0; freqStretch<(frequency/100); freqStretch++){
+		for(int freqStretch=0; freqStretch<(800/frequency); freqStretch++){	
 			analogWrite(pinAudioOut, waveformsTable[which][sample]);
 		}
 	}
 }
-
+void rest(int duration){
+	analogWrite(pinAudioOut, 0x00);
+	usleep(duration);
+}
 
 void usleep(int n){
 	delayMicroseconds(n);
