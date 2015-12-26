@@ -100,19 +100,21 @@ int SECOND = 1000000; //in microseconds
 void loop() {	/* === LOOP === */
 
 	playNCyclesPerSecond(440);
-
+	
 }
 
 void playNCyclesPerSecond(int N){
 	for(int i=0; i<N; i++){
-		playOneWavelength(SAWTOOTH);
+		playOneWavelength(SQUARE, 200000/N);
 		usleep(SECOND/N);
 	}
 }
 
-void playOneWavelength(int which){
+void playOneWavelength(int which, int frequency){
 	for(int sample=0; sample<120; sample++){ //array is 120 elements long
-		analogWrite(pinAudioOut, waveformsTable[which][sample]);
+		for(int freqStretch=0; freqStretch<(frequency/100); freqStretch++){
+			analogWrite(pinAudioOut, waveformsTable[which][sample]);
+		}
 	}
 }
 
